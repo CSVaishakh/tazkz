@@ -1,30 +1,32 @@
-'use client;'
-import React, { useState } from "react";
-import { useState,useEffect } from "react";
+"use client";
+import React, { useState, useEffect, use } from "react";
+import { parentTask } from "@/types/task";
 
-interface pageProps{
-    params: {taskID : string}
+interface TaskPageProps {
+  params: Promise<{ taskID: string }>;
 }
 
-const TaskPage: React.FC = ({params}: pageProps) => {
-    const [task,setTask] = useState(null);
+const TaskPage: React.FC<TaskPageProps> = ({ params }) => {
+  const { taskID } = use(params);
+  const [task, setTask] = useState(null);
 
-    useEffect(() => {
-            const fetchTask = async () => {
-            const res = await fetch(`/api/tasks/${params.taskID}`);
-            const data = await res.json();
-            setTask(data)
-        }
+  useEffect(() => {
+    const fetchTask = async () => {
+      const res = await fetch(`/api/tasks/${taskID}`);
+      const data = await res.json();
+      setTask(data);
+    };
 
-        fetchTask()
-    },[params.taskID])
+    fetchTask();
+  }, [taskID]);
 
-    return(
-        <section>
-            
-        </section>
-    );
 
+  console.log(task)
+  return (
+    <section>
+
+    </section>
+  );
 };
 
 export default TaskPage;
