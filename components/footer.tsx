@@ -17,7 +17,7 @@ export default function Footer () {
             className="hover:opacity-80 transition-all duration-300 transform hover:scale-125 hover:rotate-12 p-2 border-2 border-green-500 rounded-full bg-white hover:bg-green-50"
           >
             <Image 
-              src={'x.svg'} 
+              src={'/x.svg'} 
               alt="X" 
               width={20} 
               height={20} 
@@ -29,7 +29,7 @@ export default function Footer () {
             className="hover:opacity-80 transition-all duration-300 transform hover:scale-125 hover:rotate-12 p-2 border-2 border-green-500 rounded-full bg-white hover:bg-green-50"
           >
             <Image 
-              src={'instagram.svg'} 
+              src={'/instagram.svg'} 
               alt="Instagram" 
               width={20} 
               height={20} 
