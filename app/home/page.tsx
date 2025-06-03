@@ -67,8 +67,8 @@ export default function homeLayout() {
                         <SignInButton mode="modal">
                             <div className="w-80 h-80 p-8 border-3 border-black rounded-xl bg-gradient-to-br from-white via-green-50 to-green-100 hover:scale-105 hover:shadow-xl transition-all duration-300 flex flex-col justify-center items-center cursor-pointer">
                                 <h2 className="text-2xl font-bold text-black mb-4">Tasks Manager</h2>
-                                <h4 className="text-black mb-2">Plan and manage your daily tasks</h4>
-                                <h4 className="text-black mb-4">Prioritize your tasks</h4>
+                                <h4 className="text-black mb-2">Plan your tasks, set deadlines</h4>
+                                <h4 className="text-black mb-4">Track your progress</h4>
                             </div>
                         </SignInButton>
                         
