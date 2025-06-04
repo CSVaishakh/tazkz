@@ -7,11 +7,11 @@ import React from "react";
 
 const HomeHeader: React.FC = () => {
     return(
-        <section className="bg-white shadow-md border-b border-green-200">
+        <section className="bg-white shadow-md border-b-3 border-green-500">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center py-4">
                     <div>
-                        <h1 className="text-2xl font-bold text-black border-l-4 border-green-500 pl-3">Home</h1>
+                        <h1 className="text-2xl font-bold text-black border-l-4 border-green-500 pl-3">Tazkz</h1>
                     </div>
                     <div>
                         <nav className="flex items-center space-x-4">
