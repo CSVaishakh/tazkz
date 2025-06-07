@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { Button } from "./ui/button";
+import { Button } from "./ui/button"; // Add missing Button import
 import { Slider } from "@/components/ui/slider"
 import { Calendar } from "./ui/calendar";
 import { Popover,PopoverContent,PopoverTrigger } from "@/components/ui/popover"
@@ -34,7 +34,7 @@ const ReadChildTask: React.FC<childProps> = ({parent, ID}) => {
       id: taskID,
       name: taskName,
       description: taskDescription,
-      progress: taskProgress[0],
+      progress: taskProgress[0], // Convert array to single number
       deadline: taskDeadline,
       parentTask: parentTaskID,
       notes: notes
@@ -53,6 +53,7 @@ const ReadChildTask: React.FC<childProps> = ({parent, ID}) => {
       
       if (response.ok) {
         console.log('Child task created successfully:', result.message);
+        // Reset form or redirect as needed
       } else {
         console.error('Error creating child task:', result.error);
       }

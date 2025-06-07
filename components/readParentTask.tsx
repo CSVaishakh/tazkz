@@ -181,6 +181,7 @@ const ReadParentTask: React.FC<parentProps> = ({children}) => {
                 />
             </div>
 
+            {/* Display child tasks if any */}
             {childTasksIDs.length > 0 && (
                 <div>
                     <Label>Child Tasks: {childTasksIDs.length}</Label>

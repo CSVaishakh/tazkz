@@ -1,25 +1,53 @@
-import { NextRequest,NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { childTask, isChildTask, isParentTask, parentTask } from "@/types/task";
 import { auth } from "@clerk/nextjs/server";
 
-async function User() {
-    const userID = await auth();
-    return userID
+async function getUserId() {
+    try {
+        const { userId } = await auth();
+        console.log('Auth result:', { userId });
+        return userId;
+    } catch (error) {
+        console.error('Auth error:', error);
+        return null;
+    }
 }
 
 export async function GET() {
-    const { data, error } = await supabase
-        .from('parent_tasks')
-        .select('*')
-        .eq('user_id', await User())
+    try {
+        console.log('GET /api/tasks called');
+        
+        const userId = await getUserId();
+        console.log('User ID:', userId);
+        
+        if (!userId) {
+            console.log('No user ID found');
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
 
-    if (error) {
-        return NextResponse.json({ error: error.message }, { status: 500 })
+        console.log('Querying Supabase for user:', userId);
+        
+        const { data, error } = await supabase
+            .from('parent_tasks')
+            .select('*')
+            .eq('user_id', userId);
+
+        console.log('Supabase query result:', { data, error });
+
+        if (error) {
+            console.error('Supabase error:', error);
+            return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+        
+        const parentTasks: parentTask[] = data || [];
+        console.log('Returning tasks:', parentTasks);
+        return NextResponse.json(parentTasks);
+        
+    } catch (error) {
+        console.error('GET /api/tasks error:', error);
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
-    
-    const parentTasks: parentTask[] = data || [];
-    return NextResponse.json(parentTasks)
 }
 
 export async function POST (request: NextRequest) {
