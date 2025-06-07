@@ -6,9 +6,12 @@ export interface parentTask {
     status : 'started' | 'ongoing' | 'completed'
     priority : 'medium'|'high'|'low'
     deadline : string | null
-    child_tasks : string[] | null
-    note_id : string | null
+    childTasks : string[] | null
+    notes: string[] | null
 }
+
+export type status = 'started'|'ongoing'|'completed'
+export type priority = 'low'|'medium'|'high'
 
 export interface childTask {
     id : string
@@ -17,73 +20,39 @@ export interface childTask {
     progress : string
     deadline : string | null
     parentTask : string
-    note_id : string | null
+    notes : string[] | null
 }
 
-export interface parentNotes {
-    id : string
-    name : string
-    notes: string[]
-    task_id : parentTask['id']
+export function isParentTask(obj: unknown): obj is parentTask {
+  if (typeof obj !== 'object' || obj === null) return false;
+
+  const task = obj as Record<string, unknown>;
+
+  return (
+    typeof task.id === 'string' &&
+    typeof task.user_id === 'string' &&
+    typeof task.name === 'string' &&
+    (typeof task.description === 'string' || task.description === null) &&
+    (task.status === 'started' || task.status === 'ongoing' || task.status === 'completed') &&
+    (task.priority === 'medium' || task.priority === 'high' || task.priority === 'low') &&
+    (typeof task.deadline === 'string' || task.deadline === null) &&
+    (task.childTasks === null || (Array.isArray(task.childTasks) && task.childTasks.every(id => typeof id === 'string'))) &&
+    (task.notes === null || (Array.isArray(task.notes) && task.notes.every(note => typeof note === 'string')))
+  );
 }
 
-export interface childNotes {
-    id : string
-    name : string
-    notes : string[]
-    task_id : childTask['id']
-}
+export function isChildTask(obj: unknown): obj is childTask {
+  if (typeof obj !== 'object' || obj === null) return false;
 
-export function isParentTask(obj: any): obj is parentTask {
-    return (
-        typeof obj === 'object' &&
-        obj !== null &&
-        typeof obj.id === 'string' &&
-        typeof obj.user_id === 'string' &&
-        typeof obj.name === 'string' &&
-        (obj.description === null || typeof obj.description === 'string') &&
-        ['started', 'ongoing', 'completed'].includes(obj.status) &&
-        ['medium', 'high', 'low'].includes(obj.priority) &&
-        (obj.deadline === null || typeof obj.deadline === 'string') &&
-        (obj.child_tasks === null || (Array.isArray(obj.child_tasks) && obj.child_tasks.every((id: any) => typeof id === 'string'))) &&
-        (obj.note_id === null || typeof obj.note_id === 'string')
-    );
-}
+  const task = obj as Record<string, unknown>;
 
-export function isChildTask(obj: any): obj is childTask {
-    return (
-        typeof obj === 'object' &&
-        obj !== null &&
-        typeof obj.id === 'string' &&
-        typeof obj.name === 'string' &&
-        (obj.description === null || typeof obj.description === 'string') &&
-        typeof obj.progress === 'string' &&
-        (obj.deadline === null || typeof obj.deadline === 'string') &&
-        typeof obj.parentTask === 'string' &&
-        (obj.note_id === null || typeof obj.note_id === 'string')
-    );
-}
-
-export function isParentNotes(obj: any): obj is parentNotes {
-    return (
-        typeof obj === 'object' &&
-        obj !== null &&
-        typeof obj.id === 'string' &&
-        typeof obj.name === 'string' &&
-        Array.isArray(obj.notes) &&
-        obj.notes.every((note: any) => typeof note === 'string') &&
-        typeof obj.task_id === 'string'
-    );
-}
-
-export function isChildNotes(obj: any): obj is childNotes {
-    return (
-        typeof obj === 'object' &&
-        obj !== null &&
-        typeof obj.id === 'string' &&
-        typeof obj.name === 'string' &&
-        Array.isArray(obj.notes) &&
-        obj.notes.every((note: any) => typeof note === 'string') &&
-        typeof obj.task_id === 'string'
-    );
+  return (
+    typeof task.id === 'string' &&
+    typeof task.name === 'string' &&
+    (typeof task.description === 'string' || task.description === null) &&
+    typeof task.progress === 'string' &&
+    (typeof task.deadline === 'string' || task.deadline === null) &&
+    typeof task.parentTask === 'string' &&
+    (task.notes === null || (Array.isArray(task.notes) && task.notes.every(note => typeof note === 'string')))
+  );
 }
