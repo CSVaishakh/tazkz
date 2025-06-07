@@ -36,11 +36,10 @@ Tazkz is a modern task management and note-taking application that reimagines pr
 
 - **Framework**: Next.js 15 with App Router
 - **UI Components**: shadcn/ui (Radix UI primitives)
-- **Styling**: Tailwind CSS with custom animations
+- **Styling**: Tailwind CSS 
 - **Authentication**: Clerk
 - **Database**: Supabase
 - **Language**: TypeScript
-- **State Management**: React hooks
 
 ## Project Structure
 
