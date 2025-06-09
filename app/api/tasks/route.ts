@@ -25,6 +25,7 @@ export async function GET() {
 
 export async function POST (request: NextRequest) {
     const data: parentTask | childTask = await request.json();
+    console.log(data)
 
     if(isParentTask(data)){
         const { id,user_id,name,description,status,priority,deadline,childTasks,notes } = data;
@@ -45,6 +46,7 @@ export async function POST (request: NextRequest) {
         ]);
         
         if (error) {
+            console.log(error.message)
             return NextResponse.json({ error: error.message });
         }
 
@@ -67,6 +69,7 @@ export async function POST (request: NextRequest) {
         ]);
         
         if (error) {
+            console.log(error.message)
             return NextResponse.json({ error: error.message });
         }
 
