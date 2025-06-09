@@ -2,13 +2,13 @@
 
 import React from "react";
 import Link from "next/link";
-import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 
 export default function homeLayout() {
     return(
         <section className="min-h-screen bg-white flex items-center justify-center relative overflow-hidden">
             {/* Animated Background Elements */}
-            <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 {/* Floating circles */}
                 <div className="absolute top-20 left-10 w-4 h-4 bg-green-200 rounded-full animate-bounce opacity-60"></div>
                 <div className="absolute top-40 right-20 w-6 h-6 bg-green-300 rounded-full animate-pulse opacity-40"></div>
@@ -28,36 +28,33 @@ export default function homeLayout() {
                 <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-200 to-transparent animate-pulse opacity-20" style={{animationDelay: '1.5s'}}></div>
             </div>
 
-            <div className="text-center space-y-8 max-w-4xl mx-auto px-4 relative z-10">
+            <div className="text-center space-y-12 max-w-6xl mx-auto px-6 sm:px-8 relative z-10 py-12">
                 {/* Main Title with animation */}
                 <div className="relative">
-                    <h1 className="text-6xl md:text-8xl font-bold text-black animate-pulse">
+                    <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-black animate-fade-in">
                         Tazkz
                     </h1>
-                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-green-500 animate-bounce"></div>
+                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 sm:w-32 h-1 bg-green-500 animate-bounce"></div>
                 </div>
                 
                 {/* Subtitle */}
-                <h2 className="text-2xl md:text-3xl text-black font-medium">
+                <h2 className="text-xl sm:text-2xl md:text-3xl text-black font-medium opacity-80">
                     Not the regular task manager
                 </h2>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-16 mb-16">
+                <div className="flex justify-center items-center mt-16 mb-16">
                     {/* Tiles for signed in users */}
                     <SignedIn>
                         <Link href='/tasks'>
-                            <div className="w-80 h-80 p-8 border-3 border-black rounded-xl bg-gradient-to-br from-white via-green-50 to-green-100 hover:scale-105 hover:shadow-xl hover:border-green-500 transition-all duration-300 cursor-pointer flex flex-col justify-center items-center">
-                                <h2 className="text-2xl font-bold text-black mb-4">Tasks Manager</h2>
-                                <h4 className="text-black mb-2">Plan and manage your daily tasks</h4>
-                                <h4 className="text-black">Prioritize your tasks</h4>
-                            </div>
-                        </Link>
-                        
-                        <Link href='/notes'>
-                            <div className="w-80 h-80 p-8 border-3 border-black rounded-xl bg-gradient-to-br from-white via-green-50 to-green-100 hover:scale-105 hover:shadow-xl hover:border-green-500 transition-all duration-300 cursor-pointer flex flex-col justify-center items-center">
-                                <h2 className="text-2xl font-bold text-black mb-4">Notes</h2>
-                                <h4 className="text-black mb-2">Take notes effortlessly</h4>
-                                <h4 className="text-black">Link them to the related tasks</h4>
+                            <div className="w-135 h-75 p-6 border-2 border-black rounded-2xl bg-gradient-to-br from-white via-green-50 to-green-100 hover:scale-105 hover:shadow-2xl hover:border-green-500 hover:bg-gradient-to-br hover:from-green-50 hover:via-green-100 hover:to-green-200 transition-all duration-300 cursor-pointer flex flex-col justify-center items-center group">
+                                <div className="text-center">
+                                    <h2 className="text-2xl sm:text-4xl font-bold text-black mb-6 group-hover:text-green-700 transition-colors">Tasks Manager</h2>
+                                    <div className="space-y-3 text-gray-700">
+                                        <h4 className="text-base sm:text-lg">📋 Prioritize your tasks</h4>
+                                        <h4 className="text-base sm:text-lg">📝 Take notes effortlessly</h4>
+                                        <h4 className="text-base sm:text-lg">📅 Manage deadlines</h4>
+                                    </div>
+                                </div>
                             </div>
                         </Link>
                     </SignedIn>
@@ -65,32 +62,34 @@ export default function homeLayout() {
                     {/* Tiles for signed out users with embedded signin buttons */}
                     <SignedOut>
                         <SignInButton mode="modal">
-                            <div className="w-80 h-80 p-8 border-3 border-black rounded-xl bg-gradient-to-br from-white via-green-50 to-green-100 hover:scale-105 hover:shadow-xl transition-all duration-300 flex flex-col justify-center items-center cursor-pointer">
-                                <h2 className="text-2xl font-bold text-black mb-4">Tasks Manager</h2>
-                                <h4 className="text-black mb-2">Plan your tasks, set deadlines</h4>
-                                <h4 className="text-black mb-4">Track your progress</h4>
+                            <div className="w-full max-w-sm sm:max-w-md lg:max-w-lg h-80 sm:h-96 p-6 sm:p-8 border-2 border-black rounded-2xl bg-gradient-to-br from-white via-green-50 to-green-100 hover:scale-105 hover:shadow-2xl hover:border-green-500 hover:bg-gradient-to-br hover:from-green-50 hover:via-green-100 hover:to-green-200 transition-all duration-300 cursor-pointer flex flex-col justify-center items-center group">
+                                <div className="text-center">
+                                    <h2 className="text-2xl sm:text-3xl font-bold text-black mb-6 group-hover:text-green-700 transition-colors">Tasks Manager</h2>
+                                    <div className="space-y-3 text-gray-700 mb-4">
+                                        <h4 className="text-base sm:text-lg">📋 Prioritize your tasks</h4>
+                                        <h4 className="text-base sm:text-lg">📝 Take notes effortlessly</h4>
+                                        <h4 className="text-base sm:text-lg">📅 Manage deadlines</h4>
+                                    </div>
+                                    <div className="inline-block px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-medium group-hover:bg-green-600 transition-colors">
+                                        Click to Sign In
+                                    </div>
+                                </div>
                             </div>
                         </SignInButton>
-                        
-                        <SignUpButton mode="modal">
-                            <div className="w-80 h-80 p-8 border-3 border-black rounded-xl bg-gradient-to-br from-white via-green-50 to-green-100 hover:scale-105 hover:shadow-xl transition-all duration-300 flex flex-col justify-center items-center cursor-pointer">
-                                <h2 className="text-2xl font-bold text-black mb-4">Notes</h2>
-                                <h4 className="text-black mb-2">Take notes effortlessly</h4>
-                                <h4 className="text-black mb-4">Link them to the related tasks</h4>
-                            </div>
-                        </SignUpButton>
                     </SignedOut>
                 </div>
 
                 {/* Decorative elements */}
-                <div className="flex justify-center space-x-4 mt-12">
-                    <div className="w-4 h-4 bg-green-500 rounded-full animate-ping"></div>
-                    <div className="w-4 h-4 bg-green-500 rounded-full animate-ping" style={{animationDelay: '0.2s'}}></div>
-                    <div className="w-4 h-4 bg-green-500 rounded-full animate-ping" style={{animationDelay: '0.4s'}}></div>
+                <div className="mt-12">
+                    <h2 className="text-lg sm:text-xl text-gray-700 font-medium max-w-3xl mx-auto leading-relaxed">
+                        Revolutionize managing your tasks and note taking with Tazkz
+                    </h2>
                 </div>
                 
-                <div className="mt-12">
-                    <h2 className="text-xl text-black font-medium">Revolutionize managing your tasks and note taking with Tazkz</h2>
+                <div className="flex justify-center space-x-4 mt-12">
+                    <div className="w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-full animate-ping"></div>
+                    <div className="w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-full animate-ping" style={{animationDelay: '0.2s'}}></div>
+                    <div className="w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-full animate-ping" style={{animationDelay: '0.4s'}}></div>
                 </div>
             </div>
         </section>

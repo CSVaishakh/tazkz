@@ -18,11 +18,8 @@ async function User() {
     return userID
 }
 
-interface parentProps {
-    children: string[]
-}
 
-const ReadParentTask: React.FC<parentProps> = ({children}) => {
+const ReadParentTask: React.FC = () => {
     const [taskName, setTaskName] = useState('');
     const [taskID, setTaskID] = useState('');
     const [taskDescription, setTaskDescription] = useState('');
@@ -37,8 +34,7 @@ const ReadParentTask: React.FC<parentProps> = ({children}) => {
 
     useEffect(() => {
         setTaskID(generateUUID());
-        setChildTaskIDs(children.length > 0 ? children : []);
-    }, [children]);
+    }, []);
 
     const handleAddChildTask = () => {
         const newChildID = generateUUID();
@@ -48,9 +44,12 @@ const ReadParentTask: React.FC<parentProps> = ({children}) => {
     };
 
     const handleCreateParentTask = async () => {
+        const user = await User();
+        const userID = user?.userId;
+
         const parentTaskData = {
             id: taskID,
-            user_id: User(),
+            user_id: userID,
             name: taskName,
             description: taskDescription,
             status: taskStatus,
@@ -72,8 +71,7 @@ const ReadParentTask: React.FC<parentProps> = ({children}) => {
             const result = await response.json();
             
             if (response.ok) {
-                console.log('Parent task created successfully:', result.message);
-                // Reset form or redirect as needed
+                console.log('Parent task created successfully:');
             } else {
                 console.error('Error creating parent task:', result.error);
             }

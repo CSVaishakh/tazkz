@@ -4,50 +4,23 @@ import { childTask, isChildTask, isParentTask, parentTask } from "@/types/task";
 import { auth } from "@clerk/nextjs/server";
 
 async function getUserId() {
-    try {
-        const { userId } = await auth();
-        console.log('Auth result:', { userId });
-        return userId;
-    } catch (error) {
-        console.error('Auth error:', error);
-        return null;
-    }
+    const { userId } = await auth();
+    return userId;
 }
 
 export async function GET() {
-    try {
-        console.log('GET /api/tasks called');
-        
-        const userId = await getUserId();
-        console.log('User ID:', userId);
-        
-        if (!userId) {
-            console.log('No user ID found');
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
+    const userId = await getUserId();
 
-        console.log('Querying Supabase for user:', userId);
-        
-        const { data, error } = await supabase
-            .from('parent_tasks')
-            .select('*')
-            .eq('user_id', userId);
+    const { data, error } = await supabase
+        .from('parent_tasks')
+        .select('*')
+        .eq('user_id', userId);
 
-        console.log('Supabase query result:', { data, error });
-
-        if (error) {
-            console.error('Supabase error:', error);
-            return NextResponse.json({ error: error.message }, { status: 500 });
-        }
-        
-        const parentTasks: parentTask[] = data || [];
-        console.log('Returning tasks:', parentTasks);
-        return NextResponse.json(parentTasks);
-        
-    } catch (error) {
-        console.error('GET /api/tasks error:', error);
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    if (error) {
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
+    const parentTasks: parentTask[] = data || [];
+    return NextResponse.json(parentTasks);
 }
 
 export async function POST (request: NextRequest) {
