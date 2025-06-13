@@ -41,7 +41,7 @@ export async function PUT (request: NextRequest) {
             return NextResponse.json({ error: error.message });
         }
 
-        return NextResponse.json({message: "Parent Task successfully created"});
+        return NextResponse.json({message: "Parent Task successfully updated"});
 }
 
 export async function DELETE(request: NextRequest){

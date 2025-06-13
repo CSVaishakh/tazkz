@@ -48,10 +48,8 @@ const ReadParentTask: React.FC<ReadParentTaskProps> = ({ onClose }) => {
         setShowChildTask(true);
     };
 
-    // Add this function after handleChildTaskCreated
     const handleChildTaskCreated = (childID: string) => {
         setChildTaskIDs(prev => {
-            // Check if the ID already exists to prevent duplicates
             if (prev.includes(childID)) {
                 return prev;
             }
@@ -60,7 +58,6 @@ const ReadParentTask: React.FC<ReadParentTaskProps> = ({ onClose }) => {
         setShowChildTask(false);
     };
 
-    // Add this new function
     const processNotesInput = () => {
         const processedNotes = notesInput
             .split('\n')
@@ -72,7 +69,6 @@ const ReadParentTask: React.FC<ReadParentTaskProps> = ({ onClose }) => {
     const handleCreateParentTask = async () => {
         const userID = user?.id;
         
-        // Process notes before creating task
         processNotesInput();
 
         const parentTaskData = {
@@ -119,7 +115,7 @@ const ReadParentTask: React.FC<ReadParentTaskProps> = ({ onClose }) => {
                 parent={taskID} 
                 ID={currentChildID} 
                 onClose={() => setShowChildTask(false)}
-                onChildTaskCreated={handleChildTaskCreated} // Add this prop
+                onChildTaskCreated={handleChildTaskCreated}
             />
         );
     }
@@ -221,7 +217,6 @@ const ReadParentTask: React.FC<ReadParentTaskProps> = ({ onClose }) => {
                             </Popover>
                         </div>
 
-                        {/* Replace the notes textarea section with: */}
                         <div className="space-y-2">
                             <Label htmlFor="notes" className="text-sm font-semibold text-gray-800">Notes</Label>
                             <textarea
@@ -234,7 +229,6 @@ const ReadParentTask: React.FC<ReadParentTaskProps> = ({ onClose }) => {
                             />
                         </div>
 
-                        {/* Display child tasks if any */}
                         {childTasksIDs.length > 0 && (
                             <div className="p-4 bg-green-50 border-2 border-green-200 rounded-lg">
                                 <Label className="text-sm font-semibold text-gray-800 mb-3 block">

@@ -35,7 +35,7 @@ const TasksLayout: React.FC = () => {
                         {tasks.map((task, index)=>(
                             <Link 
                                 key={task.id} 
-                                href={`/task/${task.id}`} 
+                                href={`/tasks/${task.id}`} 
                                 className="group w-full max-w-sm transform transition-all duration-300 hover:scale-[1.02] animate-slide-up"
                                 style={{
                                     animationDelay: `${index * 100}ms`
