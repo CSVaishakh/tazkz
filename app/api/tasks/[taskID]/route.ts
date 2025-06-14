@@ -1,8 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { auth } from "@clerk/nextjs/server";
-import { isChildTask, parentTask } from "@/types/task";
-import { Console } from "console";
+import { parentTask, isParentTask } from "@/types/task";
 
 async function getUserID() {
     const { userId } = await auth();
@@ -47,18 +46,17 @@ export async function PATCH(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
     const data = await request.json();
-    if (isChildTask(data)) {
+    if (isParentTask(data)) {
         const { error } = await supabase
-            .from('child_tasks')
+            .from('parent_tasks')
             .delete()
             .eq('id', data.id)
-            .eq('parentTask', data.parentTask)
+            .eq('user_id',data.user_id)
 
         if (error) {
             console.log(error.message)
             return NextResponse.json(error.message);
         }
-        return NextResponse.redirect(new URL(`/tasks${data.parentTask}`, request.url))
+        return NextResponse.redirect(new URL(`/tasks`, request.url))
     }
-
 }
