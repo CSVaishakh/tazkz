@@ -4,6 +4,7 @@ import { parentTask } from "@/types/task";
 import Link from "next/link";
 import { ArrowLeft, Calendar, Users, FileText, Tag, Star } from "lucide-react";
 import { useRouter } from "next/navigation";
+import EditParent from "@/components/editParentTask";
 
 interface TaskPageProps {
   params: Promise<{ taskID: string }>;
@@ -12,6 +13,7 @@ interface TaskPageProps {
 const TaskPage: React.FC<TaskPageProps> = ({ params }) => {
   const { taskID } = use(params);
   const router = useRouter();
+  const [showEditModal, setShowEditModal] = useState(false);
   const [task, setTask] = useState<parentTask>({
     id: "",
     user_id: "",
@@ -23,6 +25,16 @@ const TaskPage: React.FC<TaskPageProps> = ({ params }) => {
     childTasks: [],
     notes: []
   });
+
+  const handleUpdate = async () => {
+    setShowEditModal(true);
+  };
+
+  const handleCloseEdit = () => {
+    setShowEditModal(false);
+    // Refetch task data after edit to show updated information
+    fetchTask();
+  };
 
   const handleDelete = async () => {
     try{
@@ -38,13 +50,13 @@ const TaskPage: React.FC<TaskPageProps> = ({ params }) => {
     }
   };
 
-  useEffect(() => {
-    const fetchTask = async () => {
-      const res = await fetch(`/api/tasks/${taskID}`);
-      const data = await res.json();
-      setTask(data);
-    };
+  const fetchTask = async () => {
+    const res = await fetch(`/api/tasks/${taskID}`);
+    const data = await res.json();
+    setTask(data);
+  };
 
+  useEffect(() => {
     fetchTask();
   }, [taskID]);
 
@@ -79,12 +91,20 @@ const TaskPage: React.FC<TaskPageProps> = ({ params }) => {
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200" />
             Back to Tasks
           </Link>
-          <button 
-            onClick={handleDelete}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg border border-red-600 hover:border-red-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 font-medium"
-          >
-            Delete Task
-          </button>
+          <div className="flex gap-3">
+            <button 
+              onClick={handleUpdate}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg border border-blue-600 hover:border-blue-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 font-medium"
+            >
+              Update
+            </button>
+            <button 
+              onClick={handleDelete}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg border border-red-600 hover:border-red-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 font-medium"
+            >
+              Delete
+            </button>
+          </div>
         </div>
 
         <div className="bg-white rounded-xl shadow-lg border border-green-200 overflow-hidden animate-fade-in min-h-[85vh]">
@@ -221,6 +241,14 @@ const TaskPage: React.FC<TaskPageProps> = ({ params }) => {
             </div>
           </div>
         </div>
+
+        {/* Edit Modal */}
+        {showEditModal && (
+          <EditParent 
+            task={task} 
+            onClose={handleCloseEdit}
+          />
+        )}
       </div>
       
       <style jsx>{`
