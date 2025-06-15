@@ -10,16 +10,6 @@ export interface parentTask {
   notes: string[] | null
 }
 
-export type status = 'started'|'ongoing'|'completed'
-export type priority = 'low'|'medium'|'high'
-
-export interface editParent{
-  description : string | null
-  status : 'started' | 'ongoing' | 'completed'
-  priority : 'medium'|'high'|'low'
-  deadline : string | null
-  notes: string[] | null
-}
 export interface childTask {
   id : string
   name : string
@@ -29,6 +19,25 @@ export interface childTask {
   parentTask : string
   notes : string[] | null
 }
+
+export interface editParent{
+  description : string | null
+  status : 'started' | 'ongoing' | 'completed'
+  priority : 'medium'|'high'|'low'
+  deadline : string | null
+  notes: string[] | null
+}
+
+export interface editChild{
+  description : string | null
+  progress : string
+  deadline : string | null
+  parentTask : string
+  notes: string[] | null
+}
+
+export type status = 'started'|'ongoing'|'completed'
+export type priority = 'low'|'medium'|'high'
 
 export function isParentTask(obj: unknown): obj is parentTask {
   if (typeof obj !== 'object' || obj === null) return false;
