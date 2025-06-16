@@ -1,4 +1,4 @@
-import { editParent, parentTask } from "@/types/task";
+import { parentTask } from "@/types/task";
 import { useEffect, useState } from "react";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
@@ -18,16 +18,12 @@ const EditParent: React.FC<EditParentProps> = ({ onClose, task }) => {
     const [taskDeadline, setTaskDeadline] = useState<Date | undefined>(
         task.deadline ? new Date(task.deadline) : undefined
     );
-    // Add state for newly selected date visual feedback
     const [isNewlySelected, setIsNewlySelected] = useState(false);
 
-    // Helper function to validate and format dates consistently
     const formatDateConsistently = (date: Date): string => {
-        // Use UTC to avoid timezone issues
         return new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString();
     };
 
-    // Helper function to check if date is in the past
     const isPastDate = (date: Date): boolean => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -38,7 +34,6 @@ const EditParent: React.FC<EditParentProps> = ({ onClose, task }) => {
 
     useEffect(() => {
         setData(task);
-        // Validate date before setting to prevent bad input on rerender
         if (task.deadline) {
             const parsedDate = new Date(task.deadline);
             if (!isNaN(parsedDate.getTime())) {
@@ -80,46 +75,36 @@ const EditParent: React.FC<EditParentProps> = ({ onClose, task }) => {
         onClose?.();
     };
 
-    // Handle date selection with validation and visual feedback
+
     const handleDateSelect = (selectedDate: Date | undefined) => {
         if (!selectedDate) {
-            // Prevent accidental null - only clear if explicitly intended
             return;
         }
 
-        // Validate date before setting
         if (isNaN(selectedDate.getTime())) {
             console.error('Invalid date selected');
             return;
         }
 
-        // Optional: Prevent past deadlines
         if (isPastDate(selectedDate)) {
             console.warn('Past date selected - consider using a future date');
-            // Uncomment the next line to prevent past dates:
-            // return;
         }
 
-        // Use consistent timezone formatting
         const formattedDate = formatDateConsistently(selectedDate);
         
         setTaskDeadline(selectedDate);
         setData({...data, deadline: formattedDate});
         
-        // Show visual feedback for newly selected deadline
         setIsNewlySelected(true);
         setTimeout(() => setIsNewlySelected(false), 2000);
 
-        // UX polish: Delay closing popover slightly for better UX
         setTimeout(() => setOpen(false), 150);
     };
 
-    // Handle clear with proper reset
     const handleClearDeadline = () => {
         setTaskDeadline(undefined);
         setData({...data, deadline: null});
         setIsNewlySelected(false);
-        // Clear inconsistency: Reset selection + close popover
         setOpen(false);
     };
 
