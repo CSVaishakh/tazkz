@@ -47,7 +47,6 @@ const ReadChildTask: React.FC<childProps> = ({parent, ID, onClose, onChildTaskCr
   };
 
   const handleCreateChildTask = async () => {
-    // Process notes before creating task
     processNotesInput();
     
     const childTaskData = {
@@ -73,7 +72,7 @@ const ReadChildTask: React.FC<childProps> = ({parent, ID, onClose, onChildTaskCr
       
       if (response.ok) {
         console.log('Child task created successfully:', result.message);
-        onChildTaskCreated?.(taskID); // Call the callback with the child task ID
+        onChildTaskCreated?.(taskID); 
         onClose?.();
       } else {
         console.error('Error creating child task:', result.error);
