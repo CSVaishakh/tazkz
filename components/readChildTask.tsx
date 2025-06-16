@@ -13,7 +13,7 @@ interface childProps {
     parent: string
     ID : string
     onClose?: () => void;
-    onChildTaskCreated?: (childID: string) => void; // Add this prop
+    onChildTaskCreated?: (childID: string) => void;
 };
 
 const ReadChildTask: React.FC<childProps> = ({parent, ID, onClose, onChildTaskCreated}) => {

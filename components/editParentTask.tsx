@@ -129,8 +129,7 @@ const EditParent: React.FC<EditParentProps> = ({ onClose, task }) => {
                 {/* Header with close button */}
                 <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex justify-between items-center rounded-t-lg">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-800">Edit Task</h1>
-                        <p className="text-sm text-gray-600 mt-1">{task.name}</p>
+                        <h1 className="text-3xl font-bold text-gray-800">{task.name}</h1>
                     </div>
                     <button
                         onClick={handleClose}
