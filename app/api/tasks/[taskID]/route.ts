@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { auth } from "@clerk/nextjs/server";
-import { parentTask, isParentTask } from "@/types/task";
+import { parentTask, childTask } from "@/types/task";
 
 async function getUserID() {
     const { userId } = await auth();
@@ -46,25 +46,28 @@ export async function PATCH(request: NextRequest, { params }: { params: { taskID
     return NextResponse.json({ message: "Parent Task successfully updated" });
 }
 
-// Also add PUT method for compatibility
-export async function PUT(request: NextRequest, { params }: { params: { taskID: string } }) {
-    return PATCH(request, { params });
-}
+export async function POST (request: NextRequest) {
+    const data: childTask = await request.json();
+    console.log(data)
+    const { id,name,description,progress,deadline,parentTask,notes } = data;
 
-export async function DELETE(request: NextRequest, { params }: { params: { taskID: string } }) {
-    const userID = await getUserID();
-    const { taskID } = await params;
-    
     const { error } = await supabase
-        .from('parent_tasks')
-        .delete()
-        .eq('id', taskID)
-        .eq('user_id', userID)
-
+        .from('child_tasks')
+        .insert([{
+            id,
+            name,
+            description,
+            progress,
+            deadline,
+            parentTask,
+            notes
+        },
+    ]);
+    
     if (error) {
         console.log(error.message)
         return NextResponse.json({ error: error.message });
     }
-    
-    return NextResponse.json({ message: "Task deleted successfully" });
+
+    return NextResponse.json({message: "Child Task successfully created"});        
 }
