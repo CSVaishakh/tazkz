@@ -1,19 +1,23 @@
 "use client";
 import React, { useState, useEffect, use } from "react";
-import { parentTask } from "@/types/task";
+import { childTask, parentTask } from "@/types/task";
 import Link from "next/link";
 import { ArrowLeft, Calendar, Users, FileText, Tag, Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 import EditParent from "@/components/editParentTask";
+import ReadChildTask from "@/app/api/tasks/[taskID]/readChildTask";
 
 interface TaskPageProps {
   params: Promise<{ taskID: string }>;
 }
 
+function generateUUID() {
+  return crypto.randomUUID();
+}
+
 const TaskPage: React.FC<TaskPageProps> = ({ params }) => {
   const { taskID } = use(params);
   const router = useRouter();
-  const [showEditModal, setShowEditModal] = useState(false);
   const [task, setTask] = useState<parentTask>({
     id: "",
     user_id: "",
@@ -26,39 +30,84 @@ const TaskPage: React.FC<TaskPageProps> = ({ params }) => {
     notes: []
   });
 
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [currentChild, setCurrentChild] = useState('');
+  const [childTasks, setChildTasks] = useState<string[]>([]);
+  const [showNewChildModal, setShowNewChildModal] = useState(false);
+
+  const fetchTask = async () => {
+    const res = await fetch(`/api/tasks/${taskID}`);
+    const data = await res.json();
+    setTask(data);
+    setChildTasks(data.childTasks || []);
+  };
+
+  useEffect(() => {
+    fetchTask();
+  }, [taskID]);
+
+  useEffect(() => {
+    setTask(prev => ({ ...prev, childTasks }));
+  }, [childTasks]);
+
   const handleUpdate = async () => {
     setShowEditModal(true);
   };
 
   const handleCloseEdit = () => {
     setShowEditModal(false);
-    // Refetch task data after edit to show updated information
     fetchTask();
   };
 
-  const handleDelete = async () => {
-    try{
-      const res = await fetch(`/api/tasks/${taskID}`,{
-        method: 'DELETE',
-        headers: {'Content-type': 'application/json'},
-        body: JSON.stringify(task)
+  const handleAddChildTask = async () => {
+    setShowNewChildModal(true);
+    const newChildID = generateUUID();
+    setCurrentChild(newChildID);
+  };
+
+  const handleCloseNewChild = async () => {
+    setShowNewChildModal(false);
+    
+    const updatedChildTasks = [...(childTasks || []), currentChild];
+    setChildTasks(updatedChildTasks);
+    
+    const updatedTask = { ...task, childTasks: updatedChildTasks };
+    setTask(updatedTask);
+    
+    try {
+      const response = await fetch(`/api/tasks/${task.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedTask),
       });
-      if(!res.ok) throw new Error("Failed to delete task");
-      router.push('/tasks');
-    }catch(error){
-      console.error(error);
+
+      if (response.ok) {
+        console.log('Child Task added to parent successfully');
+        fetchTask();
+      } else {
+        console.error('Error updating parent task');
+      }
+    } catch (error) {
+      console.error('Network error:', error);
     }
   };
 
-  const fetchTask = async () => {
-    const res = await fetch(`/api/tasks/${taskID}`);
-    const data = await res.json();
-    setTask(data);
-  };
 
-  useEffect(() => {
-    fetchTask();
-  }, [taskID]);
+  const handleDelete = async () => {
+    try {
+      const res = await fetch(`/api/tasks/${taskID}`, {
+        method: 'DELETE',
+        headers: { 'Content-type': 'application/json' },
+        body: JSON.stringify(task)
+      });
+      if (!res.ok) throw new Error("Failed to delete task");
+      router.push('/tasks');
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -78,8 +127,6 @@ const TaskPage: React.FC<TaskPageProps> = ({ params }) => {
     }
   };
 
-
-
   return (
     <section className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-full mx-auto">
@@ -93,17 +140,25 @@ const TaskPage: React.FC<TaskPageProps> = ({ params }) => {
           </Link>
           <div className="flex gap-3">
             <button 
-              onClick={handleUpdate}
+              onClick={handleAddChildTask}
               className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg border border-blue-600 hover:border-blue-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 font-medium"
             >
-              Update
+              Add Child Task
             </button>
-            <button 
-              onClick={handleDelete}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg border border-red-600 hover:border-red-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 font-medium"
-            >
-              Delete
-            </button>
+            <div className="flex gap-3">
+              <button 
+                onClick={handleUpdate}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg border border-blue-600 hover:border-blue-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 font-medium"
+              >
+                Update
+              </button>
+              <button 
+                onClick={handleDelete}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg border border-red-600 hover:border-red-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 font-medium"
+              >
+                Delete
+              </button>
+            </div>
           </div>
         </div>
 
@@ -242,7 +297,14 @@ const TaskPage: React.FC<TaskPageProps> = ({ params }) => {
           </div>
         </div>
 
-        {/* Edit Modal */}
+        {showNewChildModal && (
+          <ReadChildTask 
+            ID={currentChild}
+            parent={task.id}
+            onClose={handleCloseNewChild}
+          />
+        )}
+
         {showEditModal && (
           <EditParent 
             task={task} 
