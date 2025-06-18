@@ -1,15 +1,15 @@
-import { HomeHeader } from "@/components/header";
+import { DashboardHeader, HomeHeader } from "@/components/header";
 import React from "react";
 
-const Dashborad: React.FC = () => {
+export default function Dashboardlayout() {
     return(
         <section>
             <section>
-                <HomeHeader/>
+                <DashboardHeader/>
             </section>
             <section>
-                <h1>Comming soon</h1>
+                <h1>Coming soon</h1>
             </section>
         </section>
-    );
+    );  
 };
