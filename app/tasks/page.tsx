@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { parentTask } from "@/types/task";
 import Link from "next/link";
 import ZeroTasks from "@/components/zeroTasks";
+import { TasksHeader } from "@/components/header";
 
 const Data = () => {
     const [ tasks, setTasks ] = useState<parentTask[]>([])
@@ -25,7 +26,9 @@ const TasksLayout: React.FC = () => {
     const tasks = Data()
     console.log(tasks);
     return(
-        <section className="min-h-screen bg-gray-50 py-8 px-4">
+        <section>
+            <TasksHeader/>
+            <section className="min-h-screen bg-gray-50 py-8 px-4">
             <div className="max-w-7xl mx-auto">
                 <h1 className="text-4xl font-bold text-gray-800 mb-12 text-center animate-fade-in">Your Tasks</h1>
                 {tasks.length === 0 ? (
@@ -155,6 +158,8 @@ const TasksLayout: React.FC = () => {
                     background: linear-gradient(to bottom, #059669, #047857);
                 }
             `}</style>
+        </section>
+            
         </section>
     );
 };
