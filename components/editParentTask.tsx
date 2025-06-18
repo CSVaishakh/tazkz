@@ -123,8 +123,6 @@ const EditParent: React.FC<EditParentProps> = ({ onClose, task }) => {
                         <X className="w-6 h-6 text-gray-600" />
                     </button>
                 </div>
-
-                {/* Content */}
                 <div className="p-6">
                     <div className="mb-6 p-4 bg-gray-50 rounded-lg border">
                         <Label className="text-sm font-medium text-gray-600">Task ID: <span className="font-mono text-black">{task.id}</span></Label>
@@ -258,7 +256,6 @@ const EditParent: React.FC<EditParentProps> = ({ onClose, task }) => {
                             </div>
                         </div>
 
-                        {/* Child Tasks Display */}
                         {task.childTasks && task.childTasks.length > 0 && (
                             <div className="p-4 bg-green-50 border-2 border-green-200 rounded-lg">
                                 <Label className="text-sm font-semibold text-gray-800 mb-3 block">
