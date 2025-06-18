@@ -156,20 +156,6 @@ const EditChild: React.FC<EditChildprops> = ({ onClose, task }) => {
                                     className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
                                 />
                             </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="parentTask" className="text-sm font-semibold text-gray-800">Parent Task ID</Label>
-                                <input 
-                                    type="text"
-                                    id="parentTask"
-                                    placeholder="Enter parent task ID..."
-                                    value={data.parentTask}
-                                    onChange={(e) => {
-                                        setData({...data, parentTask: e.target.value});
-                                    }}
-                                    className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
-                                />
-                            </div>
                         </div>
 
                         <div className="space-y-2">
