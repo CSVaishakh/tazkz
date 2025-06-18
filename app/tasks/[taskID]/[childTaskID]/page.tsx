@@ -1,8 +1,16 @@
+import { ChildTaskHeader } from "@/components/header";
 import React from "react";
 
 const ChildTask: React.FC = () => {
     return(
-        <h1>Coming Soon</h1>
+        <section>
+            
+            <section>
+                <ChildTaskHeader taskName=""/>
+            </section>
+            <h1>Coming Soon</h1>
+        </section>
+
     );
 };
 
