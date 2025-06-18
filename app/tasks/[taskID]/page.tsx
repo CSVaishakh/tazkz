@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, use } from "react";
-import { childTask, parentTask } from "@/types/task";
+import { parentTask } from "@/types/task";
 import Link from "next/link";
 import { ArrowLeft, Calendar, Users, FileText, Tag, Star } from "lucide-react";
 import { useRouter } from "next/navigation";
