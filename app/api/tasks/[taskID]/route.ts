@@ -22,7 +22,7 @@ export async function GET(request: NextRequest, { params }: { params: { taskID: 
         return NextResponse.json({ error: error.message })
     }
 
-    const task: parentTask = data[0] || null
+    const task: parentTask = data[0] || null;
     return NextResponse.json(task);
 }
 
@@ -44,6 +44,21 @@ export async function PATCH(request: NextRequest, { params }: { params: { taskID
     }
 
     return NextResponse.json({ message: "Parent Task successfully updated" });
+}
+
+export async function DELETE(request: NextRequest) {
+    const data = await request.json();
+    const { error } = await supabase
+        .from('parent_tasks')
+        .delete()
+        .eq('id', data.id)
+        .eq('user_id',data.user_id)
+
+    if (error) {
+        console.log(error.message)
+        return NextResponse.json(error.message);
+    }
+    return NextResponse.redirect(new URL(`/tasks`, request.url))
 }
 
 export async function POST (request: NextRequest) {
