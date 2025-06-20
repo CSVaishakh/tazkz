@@ -1,66 +1,43 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { childTask } from "@/types/task";
+import { auth } from "@clerk/nextjs/server";
 
-export async function PATCH(request: NextRequest, { params }: { params: { taskID: string, childTaskID: string } }) {
-    const { taskID, childTaskID } = await params;
-    const data = await request.json();
-    const { description, progress, deadline, notes } = data;
 
-    const { error } = await supabase
-        .from('child_tasks')
-        .update({ description, progress, deadline, notes })
-        .eq('parentTask', taskID)
-        .eq('id', childTaskID);
-
-    if (error) {
-        console.log(error.message);
-        return NextResponse.json({ error: error.message });
-    }
-
-    return NextResponse.json({ message: "Child Task successfully updated" });
+async function getUserID () {
+    const { userId } = await auth();
+    return userId;
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { taskID: string, childTaskID: string } }) {
-    const { taskID, childTaskID } = await params;
+export async function GET(request: NextRequest, { params }: {params: {taskID: string, parentTask: string}}) {
+    const userID = await getUserID();
+    const { taskID, parentTask } = await params;
 
-    // First, get the current parent task to access its childTasks array
-    const { data: parentTask, error: fetchError } = await supabase
-        .from('parent_tasks')
-        .select('childTasks')
-        .eq('id', taskID)
-        .single();
-
-    if (fetchError) {
-        console.log(fetchError.message);
-        return NextResponse.json({ error: fetchError.message });
+    const { data,error } = await supabase
+        .from( 'child_tasks' )
+        .select('*')
+        .eq('id',userID)
+        .eq('parentTask',parentTask)
+    console.log(data);
+    if (error){
+        return NextResponse.json({ error: error.message })
     }
+    
+    const task: childTask = data[0] || null;
+    return NextResponse.json(task);
+}
 
-    // Delete the child task
-    const { error: deleteError } = await supabase
+export async function DELETE(request: NextRequest){
+    const data = await request.json();
+    const { error } = await supabase
         .from('child_tasks')
         .delete()
-        .eq('parentTask', taskID)
-        .eq('id', childTaskID);
+        .eq('id',data.id)
+        .eq('parentTask',data.parentTask)
 
-    if (deleteError) {
-        console.log(deleteError.message);
-        return NextResponse.json({ error: deleteError.message });
+    if(error){
+        console.log(error.message);
+        return NextResponse.json(error.message);
     }
-
-    // Update parent task's childTasks array to remove the deleted child task ID
-    const updatedChildTasks = parentTask.childTasks 
-        ? parentTask.childTasks.filter((id: string) => id !== childTaskID)
-        : null;
-
-    const { error: updateError } = await supabase
-        .from('parent_tasks')
-        .update({ childTasks: updatedChildTasks })
-        .eq('id', taskID);
-
-    if (updateError) {
-        console.log(updateError.message);
-        return NextResponse.json({ error: updateError.message });
-    }
-
-    return NextResponse.json({ message: "Child Task successfully deleted" });
+    return NextResponse.redirect(new URL(`/tasks/${data.parentTask}`, request.url))
 }
