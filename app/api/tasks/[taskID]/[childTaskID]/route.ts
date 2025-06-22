@@ -61,7 +61,7 @@ export async function DELETE(request: NextRequest){
                                     .eq('id', data.parentTask);
 
     if (updateError) {
-    console.log(updateError.message);
+        console.log(updateError.message);
     }
 
     return NextResponse.redirect(new URL(`/tasks/${data.parentTask}`, request.url))
