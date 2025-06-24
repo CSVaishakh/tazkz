@@ -52,7 +52,6 @@ const ChildTask: React.FC<ChildTaskPageProps> = ({ params }) => {
 
     const handleCloseEdit = () => {
         setShowEditModal(false);
-        // Refresh the task data
         const fetchTask = async () => {
             try {
                 const res = await fetch(`/api/tasks/${parent}/${child}`);
