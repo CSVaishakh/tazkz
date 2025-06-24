@@ -5,14 +5,18 @@ import React, { useEffect, useState, use } from "react";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { ArrowLeft, Calendar, FileText, Tag, CheckCircle, Clock } from "lucide-react";
+import EditChild from "@/components/editChildTask";
+import { useRouter } from "next/navigation";
 
 interface ChildTaskPageProps{
     params: Promise<{ taskID: string, childTaskID: string }>; // Match the folder structure
 }
 
 const ChildTask: React.FC<ChildTaskPageProps> = ({ params }) => {
+    const router = useRouter();
     const [parent, setParent] = useState('');
     const [child, setChild] = useState('');
+    const [showEditModal, setShowEditModal] = useState(false);
     const [task, setTask] = useState<childTask>({
         id : "",
         name : "",
@@ -42,6 +46,56 @@ const ChildTask: React.FC<ChildTaskPageProps> = ({ params }) => {
         fetchTask();
     }, [params]);
 
+    const handleEdit = () => {
+        setShowEditModal(true);
+    };
+
+    const handleCloseEdit = () => {
+        setShowEditModal(false);
+        // Refresh the task data
+        const fetchTask = async () => {
+            try {
+                const res = await fetch(`/api/tasks/${parent}/${child}`);
+                const data = await res.json();
+                setTask(data);
+            } catch (error) {
+                console.error('Error fetching task:', error);
+            }
+        };
+        fetchTask();
+    };
+
+    const handleDelete = async () => {
+        if (!confirm('Are you sure you want to delete this child task?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/tasks/${parent}/${child}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: child,
+                    parentTask: parent
+                }),
+            });
+
+            if (response.ok) {
+                console.log('Child task deleted successfully');
+                // Redirect to parent task page
+                router.push(`/tasks/${parent}`);
+            } else {
+                console.error('Error deleting child task');
+                alert('Failed to delete task. Please try again.');
+            }
+        } catch (error) {
+            console.error('Network error:', error);
+            alert('Network error. Please try again.');
+        }
+    };
+
     return(
         <section>
             <section>
@@ -59,11 +113,13 @@ const ChildTask: React.FC<ChildTaskPageProps> = ({ params }) => {
                         </Link>
                         <div className="flex gap-3">
                             <button 
+                                onClick={handleEdit}
                                 className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg border border-blue-600 hover:border-blue-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 font-medium"
                             >
                                 Edit Task
                             </button>
-                            <button 
+                            <button
+                                onClick={handleDelete}
                                 className="inline-flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg border border-red-600 hover:border-red-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 font-medium"
                             >
                                 Delete
@@ -112,7 +168,12 @@ const ChildTask: React.FC<ChildTaskPageProps> = ({ params }) => {
                                             <div>
                                                 <p className="text-sm font-medium text-gray-600">Deadline</p>
                                                 <p className="text-lg font-semibold text-gray-800">
-                                                    {task?.deadline || "No deadline set"}
+                                                    {task?.deadline ? new Date(task.deadline).toLocaleDateString('en-US', { 
+                                                        year: 'numeric', 
+                                                        month: 'long', 
+                                                        day: 'numeric',
+                                                        timeZone: 'UTC'
+                                                    }) : "No deadline set"}
                                                 </p>
                                             </div>
                                         </div>
@@ -166,6 +227,13 @@ const ChildTask: React.FC<ChildTaskPageProps> = ({ params }) => {
                             </div>
                         </div>
                     </div>
+
+                    {showEditModal && (
+                        <EditChild 
+                            task={task} 
+                            onClose={handleCloseEdit}
+                        />
+                    )}
                 </div>
                 
                 <style jsx>{`
