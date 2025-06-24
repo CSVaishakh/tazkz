@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
-import { childTask, parentTask } from "@/types/task";
+import { childTask } from "@/types/task";
 import { auth } from "@clerk/nextjs/server";
 
 
@@ -11,13 +11,12 @@ async function getUserID () {
 
 export async function GET(request: NextRequest, { params }: {params: {taskID: string, childTaskID: string}}) {
     const userID = await getUserID();
-    const { taskID, childTaskID } = params; // Changed from parentTask to childTaskID
-
+    const { taskID, childTaskID } = await params;
     const { data,error } = await supabase
         .from( 'child_tasks' )
         .select('*')
-        .eq('id', childTaskID) // Use childTaskID instead of taskID
-        .eq('parentTask', taskID) // Use taskID as parentTask
+        .eq('id', childTaskID)
+        .eq('parentTask', taskID)
     
     console.log(data);
     if (error){
@@ -64,6 +63,24 @@ export async function DELETE(request: NextRequest){
     if (updateError) {
         console.log(updateError.message);
     }
-
     return NextResponse.redirect(new URL(`/tasks/${data.parentTask}`, request.url))
+}
+
+export async function PATCH(request: NextRequest, { params }: {params: {taskID: string, childTaskID: string} }) {
+    const { taskID, childTaskID } = params;
+    const data = await request.json();
+    const { id, name, description, progress, deadline, parentTask, notes } = data;
+
+    const { error } = await supabase
+        .from('child_tasks')
+        .update({ description, progress, deadline, notes })
+        .eq('id',childTaskID)
+        .eq('parentTask',taskID);
+
+    if (error) {
+        console.error(error.message)
+        return NextResponse.json({ error: error.message });
+    }
+
+    return NextResponse.json({ message: "hild Task successfully updated" });
 }
