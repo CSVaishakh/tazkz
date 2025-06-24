@@ -1,8 +1,7 @@
 'use client';
 import { ChildTaskHeader } from "@/components/header";
 import { childTask } from "@/types/task";
-import React, { useEffect, useState, use } from "react";
-import { Label } from "@/components/ui/label";
+import React, { useEffect, useState} from "react";
 import Link from "next/link";
 import { ArrowLeft, Calendar, FileText, Tag, CheckCircle, Clock } from "lucide-react";
 import EditChild from "@/components/editChildTask";

@@ -2,7 +2,6 @@
 
 import { SignedIn, SignedOut, SignInButton, SignUpButton, SignOutButton } from "@clerk/nextjs";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import React from "react";
 
 export const HomeHeader: React.FC = () => {

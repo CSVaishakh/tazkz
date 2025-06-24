@@ -45,7 +45,7 @@ const TaskPage: React.FC<TaskPageProps> = ({ params }) => {
 
   useEffect(() => {
     fetchTask();
-  }, [taskID]);
+  }, [fetchTask]);
 
   useEffect(() => {
     setTask(prev => ({ ...prev, childTasks }));

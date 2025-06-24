@@ -4,7 +4,7 @@ import { Label } from "./ui/label";
 import { Button } from "./ui/button";
 import { Calendar } from "./ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { ChevronDown, X, CalendarIcon, FileText, Tag, Users, Clock, Star, List, User } from "lucide-react"
+import { ChevronDown, X, CalendarIcon, FileText, Tag, User } from "lucide-react"
 
 interface EditChildprops{
     task: childTask;

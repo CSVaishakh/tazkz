@@ -10,7 +10,6 @@ async function getUserID () {
 }
 
 export async function GET(request: NextRequest, { params }: {params: {taskID: string, childTaskID: string}}) {
-    const userID = await getUserID();
     const { taskID, childTaskID } = await params;
     const { data,error } = await supabase
         .from( 'child_tasks' )
@@ -69,7 +68,7 @@ export async function DELETE(request: NextRequest){
 export async function PATCH(request: NextRequest, { params }: {params: {taskID: string, childTaskID: string} }) {
     const { taskID, childTaskID } = params;
     const data = await request.json();
-    const { id, name, description, progress, deadline, parentTask, notes } = data;
+    const { description, progress, deadline, notes } = data;
 
     const { error } = await supabase
         .from('child_tasks')
