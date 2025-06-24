@@ -155,7 +155,7 @@ const TaskPage: React.FC<TaskPageProps> = ({ params }) => {
                   onClick={handleUpdate}
                   className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg border border-blue-600 hover:border-blue-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 font-medium"
                 >
-                  Update
+                  Edit Task
                 </button>
                 <button 
                   onClick={handleDelete}
