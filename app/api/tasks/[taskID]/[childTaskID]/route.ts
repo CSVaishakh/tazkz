@@ -9,77 +9,77 @@ async function getUserID () {
     return userId;
 }
 
-export async function GET(request: NextRequest, { params }: {params: {taskID: string, childTaskID: string}}) {
-    const { taskID, childTaskID } = await params;
-    const { data,error } = await supabase
-        .from( 'child_tasks' )
-        .select('*')
-        .eq('id', childTaskID)
-        .eq('parentTask', taskID)
-    
-    console.log(data);
-    if (error){
-        return NextResponse.json({ error: error.message })
-    }
-    
-    const task: childTask = data[0] || null;
-    return NextResponse.json(task);
+export async function GET(request: NextRequest,{ params }: { params: Promise<{ taskID: string; childTaskID: string }> }) {
+  const { taskID, childTaskID } = await params
+  const { data,error } = await supabase
+      .from( 'child_tasks' )
+      .select('*')
+      .eq('id', childTaskID)
+      .eq('parentTask', taskID)
+  
+  console.log(data);
+  if (error){
+      return NextResponse.json({ error: error.message })
+  }
+  
+  const task: childTask = data[0] || null;
+  return NextResponse.json(task);
 }
 
-export async function DELETE(request: NextRequest){
-    const userID = await getUserID();
-    const data = await request.json();
-    const { error } = await supabase
-        .from('child_tasks')
-        .delete()
-        .eq('id',data.id)
-        .eq('parentTask',data.parentTask)
+export async function PATCH( request: NextRequest, { params }: { params: Promise<{ taskID: string; childTaskID: string }> }) {
+  const { taskID, childTaskID } = await params
+  const data = await request.json();
+  const { description, progress, deadline, notes } = data;
 
-    if(error){
-        console.log(error.message);
-        return NextResponse.json(error.message);
-    }
+  const { error } = await supabase
+      .from('child_tasks')
+      .update({ description, progress, deadline, notes })
+      .eq('id',childTaskID)
+      .eq('parentTask',taskID);
 
-    const { data: parentTask } = await supabase
-                                        .from('parent_tasks')
-                                        .select('*')
-                                        .eq('id', data.parentTask)
-                                        .eq('user_id',userID)
-    
-    const orginalChildTasks: string[] = parentTask?.[0]?.childTasks || [];
-    const newChildTasks: string[] = [];
+  if (error) {
+      console.error(error.message)
+      return NextResponse.json({ error: error.message });
+  }
 
-    for (let i = 0; i < orginalChildTasks.length; i++) if(orginalChildTasks[i] !== data.id) newChildTasks.push(orginalChildTasks[i])
-    
-    console.log(orginalChildTasks);
-    console.log(newChildTasks)
-
-    const { error: updateError } = await supabase
-                                    .from('parent_tasks')
-                                    .update({ childTasks: newChildTasks })
-                                    .eq('id', data.parentTask);
-
-    if (updateError) {
-        console.log(updateError.message);
-    }
-    return NextResponse.redirect(new URL(`/tasks/${data.parentTask}`, request.url))
+  return NextResponse.json({ message: "hild Task successfully updated" });
 }
 
-export async function PATCH(request: NextRequest, { params }: {params: {taskID: string, childTaskID: string} }) {
-    const { taskID, childTaskID } = params;
-    const data = await request.json();
-    const { description, progress, deadline, notes } = data;
+export async function DELETE(request: NextRequest,) {
+  const userID = await getUserID();
+  const data = await request.json();
+  const { error } = await supabase
+      .from('child_tasks')
+      .delete()
+      .eq('id',data.id)
+      .eq('parentTask',data.parentTask)
 
-    const { error } = await supabase
-        .from('child_tasks')
-        .update({ description, progress, deadline, notes })
-        .eq('id',childTaskID)
-        .eq('parentTask',taskID);
+  if(error){
+      console.log(error.message);
+      return NextResponse.json(error.message);
+  }
 
-    if (error) {
-        console.error(error.message)
-        return NextResponse.json({ error: error.message });
-    }
+  const { data: parentTask } = await supabase
+                                          .from('parent_tasks')
+                                          .select('*')
+                                          .eq('id', data.parentTask)
+                                          .eq('user_id',userID)
+  
+  const orginalChildTasks: string[] = parentTask?.[0]?.childTasks || [];
+  const newChildTasks: string[] = [];
 
-    return NextResponse.json({ message: "hild Task successfully updated" });
+  for (let i = 0; i < orginalChildTasks.length; i++) if(orginalChildTasks[i] !== data.id) newChildTasks.push(orginalChildTasks[i])
+  
+  console.log(orginalChildTasks);
+  console.log(newChildTasks)
+
+  const { error: updateError } = await supabase
+                                      .from('parent_tasks')
+                                      .update({ childTasks: newChildTasks })
+                                      .eq('id', data.parentTask);
+
+  if (updateError) {
+      console.log(updateError.message);
+  }
+  return NextResponse.redirect(new URL(`/tasks/${data.parentTask}`, request.url))
 }

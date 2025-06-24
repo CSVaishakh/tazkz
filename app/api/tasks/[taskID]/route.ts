@@ -8,7 +8,7 @@ async function getUserID() {
     return userId
 }
 
-export async function GET(request: NextRequest, { params }: { params: { taskID: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ taskID: string }> }) {
     const userID = await getUserID();
     const { taskID } = await params;
 
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest, { params }: { params: { taskID: 
     return NextResponse.json(task);
 }
 
-export async function PATCH(request: NextRequest, { params }: { params: { taskID: string } }) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ taskID: string }> }) {
     const userID = await getUserID();
     const { taskID } = await params;
     const data = await request.json();

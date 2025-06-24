@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect, use, useCallback } from "react";
 import { parentTask } from "@/types/task";
 import Link from "next/link";
 import { ArrowLeft, Calendar, Users, FileText, Tag, Star } from "lucide-react";
@@ -36,12 +36,12 @@ const TaskPage: React.FC<TaskPageProps> = ({ params }) => {
   const [childTasks, setChildTasks] = useState<string[]>([]);
   const [showNewChildModal, setShowNewChildModal] = useState(false);
 
-  const fetchTask = async () => {
+  const fetchTask = useCallback(async () => {
     const res = await fetch(`/api/tasks/${taskID}`);
     const data = await res.json();
     setTask(data);
     setChildTasks(data.childTasks || []);
-  };
+  }, [taskID]);
 
   useEffect(() => {
     fetchTask();
