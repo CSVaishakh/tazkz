@@ -2,9 +2,10 @@ import { childTask } from "@/types/task";
 import { useEffect, useState } from "react";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
+import { Slider } from "@/components/ui/slider"
 import { Calendar } from "./ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { ChevronDown, X, CalendarIcon, FileText, Tag, User } from "lucide-react"
+import { ChevronDown, X, CalendarIcon, FileText, Tag, User, BarChart3 } from "lucide-react"
 
 interface EditChildprops{
     task: childTask;
@@ -17,6 +18,7 @@ const EditChild: React.FC<EditChildprops> = ({ onClose, task }) => {
     const [taskDeadline, setTaskDeadline] = useState<Date | undefined>(
         task.deadline ? new Date(task.deadline) : undefined
     );
+    const [taskProgress, setTaskProgress] = useState<number[]>([typeof task.progress === 'string' ? parseInt(task.progress) : (task.progress || 0)]);
     const [isNewlySelected, setIsNewlySelected] = useState(false);
 
     const formatDateConsistently = (date: Date): string => {
@@ -33,6 +35,7 @@ const EditChild: React.FC<EditChildprops> = ({ onClose, task }) => {
 
     useEffect(() => {
         setData(task);
+        setTaskProgress([typeof task.progress === 'string' ? parseInt(task.progress) : (task.progress || 0)]);
         if (task.deadline) {
             const parsedDate = new Date(task.deadline);
             if (!isNaN(parsedDate.getTime())) {
@@ -48,6 +51,11 @@ const EditChild: React.FC<EditChildprops> = ({ onClose, task }) => {
             document.body.style.overflow = 'unset';
         };
     }, [task]);
+
+    const handleProgressChange = (value: number[]) => {
+        setTaskProgress(value);
+        setData({...data, progress: value[0].toString()});
+    };
 
     const handleSave = async () => {
         try {
@@ -165,6 +173,40 @@ const EditChild: React.FC<EditChildprops> = ({ onClose, task }) => {
                                 className="w-full p-4 border-2 border-gray-300 rounded-xl focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all duration-200 resize-none h-32 text-lg text-black placeholder:text-black"
                             />
                         </div>
+
+                        {/* Progress Slider */}
+                        <div className="space-y-3">
+                            <Label htmlFor="progress" className="text-lg font-semibold text-black flex items-center gap-2">
+                                <BarChart3 className="w-5 h-5 text-green-600" />
+                                Progress: {taskProgress[0]}%
+                            </Label>
+                            <div className="p-6 border-2 border-gray-300 rounded-xl focus-within:border-green-500 focus-within:ring-4 focus-within:ring-green-100 transition-all duration-200 bg-gradient-to-r from-gray-50 to-green-50">
+                                <Slider
+                                    value={taskProgress}
+                                    onValueChange={handleProgressChange}
+                                    max={100}
+                                    step={1}
+                                    className="w-full"
+                                />
+                                <div className="flex justify-between text-sm text-gray-600 mt-3 font-medium">
+                                    <span>0%</span>
+                                    <span>50%</span>
+                                    <span>100%</span>
+                                </div>
+                                <div className="mt-4 p-3 bg-white rounded-lg border border-gray-200">
+                                    <p className="text-sm text-black">
+                                        <span className="font-semibold">Current progress: </span>
+                                        <span className="font-mono text-green-600 font-bold">{taskProgress[0]}%</span>
+                                        {taskProgress[0] === 100 && (
+                                            <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">
+                                                Complete!
+                                            </span>
+                                        )}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
                         <div className="space-y-3">
                             <Label htmlFor="date" className="text-lg font-semibold text-black flex items-center gap-2">
                                 <CalendarIcon className="w-5 h-5 text-green-600" />
