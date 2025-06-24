@@ -1,8 +1,12 @@
+import { AboutHeader } from "@/components/header";
 import React from "react";
 
 export default function AboutLayout(){
     return(
         <section>
+            <section>
+                <AboutHeader/>
+            </section>
             <section className="min-h-screen bg-white relative overflow-hidden">
                 <div className="absolute inset-0 overflow-hidden">
                     {/* Floating circles with enhanced animations */}
