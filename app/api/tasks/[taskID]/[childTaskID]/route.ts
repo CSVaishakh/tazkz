@@ -9,15 +9,16 @@ async function getUserID () {
     return userId;
 }
 
-export async function GET(request: NextRequest, { params }: {params: {taskID: string, parentTask: string}}) {
+export async function GET(request: NextRequest, { params }: {params: {taskID: string, childTaskID: string}}) {
     const userID = await getUserID();
-    const { taskID, parentTask } = await params;
+    const { taskID, childTaskID } = params; // Changed from parentTask to childTaskID
 
     const { data,error } = await supabase
         .from( 'child_tasks' )
         .select('*')
-        .eq('id',userID)
-        .eq('parentTask',parentTask)
+        .eq('id', childTaskID) // Use childTaskID instead of taskID
+        .eq('parentTask', taskID) // Use taskID as parentTask
+    
     console.log(data);
     if (error){
         return NextResponse.json({ error: error.message })
@@ -65,4 +66,4 @@ export async function DELETE(request: NextRequest){
     }
 
     return NextResponse.redirect(new URL(`/tasks/${data.parentTask}`, request.url))
-} 
+}
