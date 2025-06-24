@@ -13,7 +13,7 @@ export default function Page() {
     if (!isLoaded) return;
 
     if (isSignedIn) {
-      router.push("/dashboard");
+      router.push("/tasks");
     } else {
       router.push("/home");
     }
