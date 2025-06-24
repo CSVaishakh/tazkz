@@ -143,6 +143,21 @@ const EditParent: React.FC<EditParentProps> = ({ onClose, task }) => {
                     </div>
 
                     <div className="space-y-8">
+                        {/* Task Name - Read Only */}
+                        <div className="space-y-3">
+                            <Label htmlFor="name" className="text-lg font-semibold text-black flex items-center gap-2">
+                                <FileText className="w-5 h-5 text-green-600" />
+                                Task Name
+                            </Label>
+                            <input 
+                                type="text"
+                                id="name"
+                                value={data.name || ""}
+                                readOnly
+                                className="w-full p-4 border-2 border-gray-200 rounded-xl bg-gray-50 text-lg text-gray-600 cursor-not-allowed"
+                            />
+                        </div>
+
                         {/* Description */}
                         <div className="space-y-3">
                             <Label htmlFor="desc" className="text-lg font-semibold text-black flex items-center gap-2">
@@ -290,6 +305,54 @@ const EditParent: React.FC<EditParentProps> = ({ onClose, task }) => {
                             </div>
                         </div>
 
+                        {/* Notes - Editable */}
+                        <div className="space-y-3">
+                            <Label htmlFor="notes" className="text-lg font-semibold text-black flex items-center gap-2">
+                                <FileText className="w-5 h-5 text-green-600" />
+                                Notes
+                            </Label>
+                            <div className="space-y-3">
+                                {data.notes && data.notes.length > 0 ? (
+                                    data.notes.map((note, index) => (
+                                        <div key={index} className="flex gap-3">
+                                            <textarea
+                                                value={note}
+                                                onChange={(e) => {
+                                                    const updatedNotes = [...(data.notes || [])];
+                                                    updatedNotes[index] = e.target.value;
+                                                    setData({...data, notes: updatedNotes});
+                                                }}
+                                                className="flex-1 p-4 border-2 border-gray-300 rounded-xl focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all duration-200 resize-none h-24 text-black"
+                                                placeholder="Enter note..."
+                                            />
+                                            <Button
+                                                variant="outline"
+                                                onClick={() => {
+                                                    const updatedNotes = data.notes?.filter((_, i) => i !== index) || [];
+                                                    setData({...data, notes: updatedNotes});
+                                                }}
+                                                className="px-4 py-2 border-2 border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 transition-all duration-200 rounded-xl font-medium self-start"
+                                            >
+                                                Remove
+                                            </Button>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="text-gray-500 italic p-4 bg-gray-50 rounded-xl">No notes added yet</p>
+                                )}
+                                <Button
+                                    variant="outline"
+                                    onClick={() => {
+                                        const updatedNotes = [...(data.notes || []), ""];
+                                        setData({...data, notes: updatedNotes});
+                                    }}
+                                    className="w-full p-4 border-2 border-green-300 text-green-600 hover:bg-green-50 hover:border-green-400 transition-all duration-200 rounded-xl font-medium"
+                                >
+                                    Add Note
+                                </Button>
+                            </div>
+                        </div>
+
                         {/* Child Tasks */}
                         {task.childTasks && task.childTasks.length > 0 && (
                             <div className="p-6 bg-gradient-to-r from-gray-50 to-green-50 border-2 border-gray-200 rounded-xl">
@@ -308,24 +371,6 @@ const EditParent: React.FC<EditParentProps> = ({ onClose, task }) => {
                                                 <span className="font-semibold text-black">Child Task {index + 1}</span>
                                                 <p className="font-mono text-xs text-gray-600 mt-1">{id}</p>
                                             </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Notes */}
-                        {task.notes && task.notes.length > 0 && (
-                            <div className="p-6 bg-gradient-to-r from-gray-50 to-green-50 border-2 border-gray-200 rounded-xl">
-                                <Label className="text-lg font-semibold text-black mb-4 block flex items-center gap-2">
-                                    <FileText className="w-5 h-5 text-green-600" />
-                                    Notes
-                                </Label>
-                                <div className="space-y-3 max-h-40 overflow-y-auto custom-scrollbar">
-                                    {task.notes.map((note, index) => (
-                                        <div key={index} className="flex items-start gap-3 p-4 bg-white rounded-lg border border-gray-200 hover:border-green-300 transition-all duration-200">
-                                            <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                                            <p className="text-black leading-relaxed">{note}</p>
                                         </div>
                                     ))}
                                 </div>
