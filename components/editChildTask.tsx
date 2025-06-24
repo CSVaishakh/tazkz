@@ -51,7 +51,7 @@ const EditChild: React.FC<EditChildprops> = ({ onClose, task }) => {
 
     const handleSave = async () => {
         try {
-            const response = await fetch(`/api/child-tasks/${task.id}`, {
+            const response = await fetch(`/api/${task.parentTask}/${task.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -109,7 +109,7 @@ const EditChild: React.FC<EditChildprops> = ({ onClose, task }) => {
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
             <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[95vh] overflow-hidden border border-gray-200">
-                
+
                 <div className="sticky top-0 bg-gradient-to-r from-green-500 to-green-600 p-6 flex justify-between items-center">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
