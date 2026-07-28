@@ -53,7 +53,7 @@ const ReadChildTask: React.FC<childProps> = ({parent, ID, onClose, onChildTaskCr
       id: taskID,
       name: taskName,
       description: taskDescription,
-      progress: taskProgress[0],
+      progress: taskProgress[0].toString(),
       deadline: taskDeadline ? taskDeadline.toISOString().split('T')[0] : null,
       parentTask: parentTaskID,
       notes: notes

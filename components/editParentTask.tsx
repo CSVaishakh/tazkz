@@ -53,7 +53,7 @@ const EditParent: React.FC<EditParentProps> = ({ onClose, task }) => {
     const handleSave = async () => {
         try {
             const response = await fetch(`/api/tasks/${task.id}`, {
-                method: 'PUT',
+                method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                 },

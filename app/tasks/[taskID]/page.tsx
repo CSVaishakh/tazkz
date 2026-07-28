@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, Calendar, Users, FileText, Tag, Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 import EditParent from "@/components/editParentTask";
-import ReadChildTask from "@/app/api/tasks/[taskID]/readChildTask";
+import ReadChildTask from "@/components/readChildTask";
 import { TaskHeader } from "@/components/header";
 
 interface TaskPageProps {
