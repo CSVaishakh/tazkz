@@ -4,7 +4,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: tazkz
-      POSTGRES_PASSWORD: tazkz
+      POSTGRES_PASSWORD: 2004%2712CSVaishakh
       POSTGRES_DB: tazkz
     ports:
       - "5432:5432"
