@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { sql } from "@/lib/db";
 import { childTask, isChildTask, isParentTask, parentTask } from "@/types/task";
 import { auth } from "@clerk/nextjs/server";
 
@@ -11,69 +11,51 @@ async function getUserId() {
 export async function GET() {
     const userId = await getUserId();
 
-    const { data, error } = await supabase
-        .from('parent_tasks')
-        .select('*')
-        .eq('user_id', userId);
-
-    if (error) {
-        return NextResponse.json({ error: error.message });
+    try {
+        const parentTasks = await sql<parentTask[]>`
+            SELECT * FROM parent_tasks WHERE user_id = ${userId}
+        `;
+        return NextResponse.json(parentTasks);
+    } catch (error) {
+        return NextResponse.json({ error: (error as Error).message }, { status: 500 });
     }
-    const parentTasks: parentTask[] = data || [];
-    return NextResponse.json(parentTasks);
 }
 
-export async function POST (request: NextRequest) {
+export async function POST(request: NextRequest) {
     const data: parentTask | childTask = await request.json();
-    console.log(data)
 
-    if(isParentTask(data)){
-        const { id,user_id,name,description,status,priority,deadline,childTasks,notes } = data;
+    if (isParentTask(data)) {
+        const { id, user_id, name, description, status, priority, deadline, childTasks, notes } = data;
 
-        const { error } = await supabase
-            .from('parent_tasks')
-            .insert([{
-                id,
-                user_id,
-                name,
-                description,
-                status,
-                priority,
-                deadline,
-                childTasks,
-                notes
-            },
-        ]);
-        
-        if (error) {
-            console.log(error.message)
-            return NextResponse.json({ error: error.message });
+        try {
+            await sql`
+                INSERT INTO parent_tasks (id, user_id, name, description, status, priority, deadline, "childTasks", notes)
+                VALUES (
+                    ${id}, ${user_id}, ${name}, ${description}, ${status}, ${priority}, ${deadline},
+                    ${childTasks ? sql.array(childTasks) : null},
+                    ${notes ? sql.array(notes) : null}
+                )
+            `;
+            return NextResponse.json({ message: "Parent Task successfully created" }, { status: 201 });
+        } catch (error) {
+            return NextResponse.json({ error: (error as Error).message }, { status: 400 });
         }
+    } else if (isChildTask(data)) {
+        const { id, name, description, progress, deadline, parentTask, notes } = data;
 
-        return NextResponse.json({message: "Parent Task successfully created"});
-
-    }else if(isChildTask(data)){
-        const { id,name,description,progress,deadline,parentTask,notes } = data;
-
-        const { error } = await supabase
-            .from('child_tasks')
-            .insert([{
-                id,
-                name,
-                description,
-                progress,
-                deadline,
-                parentTask,
-                notes
-            },
-        ]);
-        
-        if (error) {
-            console.log(error.message)
-            return NextResponse.json({ error: error.message });
+        try {
+            await sql`
+                INSERT INTO child_tasks (id, name, description, progress, deadline, "parentTask", notes)
+                VALUES (
+                    ${id}, ${name}, ${description}, ${progress}, ${deadline}, ${parentTask},
+                    ${notes ? sql.array(notes) : null}
+                )
+            `;
+            return NextResponse.json({ message: "Child Task successfully created" }, { status: 201 });
+        } catch (error) {
+            return NextResponse.json({ error: (error as Error).message }, { status: 400 });
         }
-
-        return NextResponse.json({message: "Child Task successfully created"});        
     }
-    return NextResponse.json({error: "Insufficient data fir a task to be created"});
+
+    return NextResponse.json({ error: "Insufficient data fir a task to be created" }, { status: 400 });
 }

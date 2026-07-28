@@ -1,29 +1,30 @@
 import { NextResponse, NextRequest } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { sql } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 import { parentTask, childTask } from "@/types/task";
 
 async function getUserID() {
     const { userId } = await auth();
-    return userId
+    return userId;
 }
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ taskID: string }> }) {
     const userID = await getUserID();
     const { taskID } = await params;
 
-    const { data, error } = await supabase
-        .from('parent_tasks')
-        .select('*')
-        .eq('user_id', userID)
-        .eq('id', taskID);
-    console.log(data);
-    if (error) {
-        return NextResponse.json({ error: error.message })
-    }
+    try {
+        const rows = await sql<parentTask[]>`
+            SELECT * FROM parent_tasks WHERE user_id = ${userID} AND id = ${taskID}
+        `;
 
-    const task: parentTask = data[0] || null;
-    return NextResponse.json(task);
+        if (rows.length === 0) {
+            return NextResponse.json({ error: "Task not found" }, { status: 404 });
+        }
+
+        return NextResponse.json(rows[0]);
+    } catch (error) {
+        return NextResponse.json({ error: (error as Error).message }, { status: 500 });
+    }
 }
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ taskID: string }> }) {
@@ -32,57 +33,62 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     const data = await request.json();
     const { name, description, status, priority, deadline, childTasks, notes } = data;
 
-    const { error } = await supabase
-        .from('parent_tasks')
-        .update({ name, description, status, priority, deadline, childTasks, notes })
-        .eq('user_id', userID)
-        .eq('id', taskID);
+    try {
+        const rows = await sql`
+            UPDATE parent_tasks
+            SET name = ${name},
+                description = ${description},
+                status = ${status},
+                priority = ${priority},
+                deadline = ${deadline},
+                "childTasks" = ${childTasks ? sql.array(childTasks) : null},
+                notes = ${notes ? sql.array(notes) : null}
+            WHERE user_id = ${userID} AND id = ${taskID}
+        `;
 
-    if (error) {
-        console.log(error.message)
-        return NextResponse.json({ error: error.message });
+        if (rows.count === 0) {
+            return NextResponse.json({ error: "Task not found" }, { status: 404 });
+        }
+
+        return NextResponse.json({ message: "Parent Task successfully updated" });
+    } catch (error) {
+        return NextResponse.json({ error: (error as Error).message }, { status: 400 });
     }
-
-    return NextResponse.json({ message: "Parent Task successfully updated" });
 }
 
-export async function DELETE(request: NextRequest) {
-    const data = await request.json();
-    const { error } = await supabase
-        .from('parent_tasks')
-        .delete()
-        .eq('id', data.id)
-        .eq('user_id',data.user_id)
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ taskID: string }> }) {
+    const userID = await getUserID();
+    const { taskID } = await params;
 
-    if (error) {
-        console.log(error.message)
-        return NextResponse.json(error.message);
+    try {
+        const rows = await sql`
+            DELETE FROM parent_tasks WHERE id = ${taskID} AND user_id = ${userID}
+        `;
+
+        if (rows.count === 0) {
+            return NextResponse.json({ error: "Task not found" }, { status: 404 });
+        }
+
+        return NextResponse.redirect(new URL(`/tasks`, request.url));
+    } catch (error) {
+        return NextResponse.json({ error: (error as Error).message }, { status: 400 });
     }
-    return NextResponse.redirect(new URL(`/tasks`, request.url))
 }
 
-export async function POST (request: NextRequest) {
+export async function POST(request: NextRequest) {
     const data: childTask = await request.json();
-    console.log(data)
-    const { id,name,description,progress,deadline,parentTask,notes } = data;
+    const { id, name, description, progress, deadline, parentTask, notes } = data;
 
-    const { error } = await supabase
-        .from('child_tasks')
-        .insert([{
-            id,
-            name,
-            description,
-            progress,
-            deadline,
-            parentTask,
-            notes
-        },
-    ]);
-    
-    if (error) {
-        console.log(error.message)
-        return NextResponse.json({ error: error.message });
+    try {
+        await sql`
+            INSERT INTO child_tasks (id, name, description, progress, deadline, "parentTask", notes)
+            VALUES (
+                ${id}, ${name}, ${description}, ${progress}, ${deadline}, ${parentTask},
+                ${notes ? sql.array(notes) : null}
+            )
+        `;
+        return NextResponse.json({ message: "Child Task successfully created" }, { status: 201 });
+    } catch (error) {
+        return NextResponse.json({ error: (error as Error).message }, { status: 400 });
     }
-
-    return NextResponse.json({message: "Child Task successfully created"});        
 }
