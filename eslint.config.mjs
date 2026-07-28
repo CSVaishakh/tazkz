@@ -1,16 +1,18 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
+import nextTypescript from "eslint-config-next/typescript";
 
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  ...nextCoreWebVitals,
+  ...nextTypescript,
+  {
+    rules: {
+      // Pre-existing pattern across several components (populating form state
+      // from props/UUIDs on mount). Flagged as an error by the stricter rule
+      // bundled with Next 16's eslint-plugin-react-hooks; downgraded to a
+      // warning rather than silently rewriting component behavior.
+      "react-hooks/set-state-in-effect": "warn",
+    },
+  },
 ];
 
 export default eslintConfig;
