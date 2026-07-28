@@ -48,7 +48,7 @@ Tazkz is a modern task management and note-taking application that reimagines pr
 - **UI Components**: shadcn/ui (Radix UI primitives)
 - **Styling**: Tailwind CSS with custom animations
 - **Authentication**: Clerk with middleware protection
-- **Database**: Supabase with PostgreSQL
+- **Database**: PostgreSQL (self-hosted via Docker)
 - **Language**: TypeScript with strict type checking
 - **Icons**: Lucide React icons
 - **Date Handling**: Built-in date utilities
@@ -138,7 +138,7 @@ The dashboard provides:
 - **Responsive Design**: Mobile-first approach with breakpoints
 
 ### Data Persistence
-- **Supabase Integration**: Real-time database operations
+- **PostgreSQL**: Dockerized database accessed via postgres.js
 - **Type Safety**: Full TypeScript support with proper typing
 - **Error Handling**: Comprehensive error management
 - **Data Validation**: Input validation and sanitization
