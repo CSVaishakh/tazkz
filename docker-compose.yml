@@ -1,15 +1,16 @@
 services:
   postgres:
     image: postgres:16-alpine
+    container_name: tasklz-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: tazkz
-      POSTGRES_PASSWORD: 2004%2712CSVaishakh
+      POSTGRES_PASSWORD: "2004%2712CSVaishakh"
       POSTGRES_DB: tazkz
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - tasklz_pgdata:/var/lib/postgresql/data
       - ./db/init:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U tazkz -d tazkz"]
@@ -18,4 +19,4 @@ services:
       retries: 10
 
 volumes:
-  pgdata:
+  tasklz_pgdata:
